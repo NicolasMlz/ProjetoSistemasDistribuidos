@@ -1,18 +1,17 @@
-# Usa uma imagem base do Python
+# Usar imagem base do Python
 FROM python:3.9
 
-# Define o diretório de trabalho na imagem
+# Definir diretório de trabalho
 WORKDIR /app
 
-# Copia o arquivo requirements.txt e instala as dependências
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
-
-# Copia todos os arquivos para o diretório de trabalho
+# Copiar arquivos do servidor
 COPY . /app
 
-# Expõe a porta 8000 (ou a porta em que o servidor está rodando)
+# Instalar dependências
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expor a porta 8000
 EXPOSE 8000
 
-# Define o comando de inicialização
-CMD ["python", "Servidor/servidor.py"]
+# Comando para iniciar o servidor
+CMD ["python", "servidor.py"]
