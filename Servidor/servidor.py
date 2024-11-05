@@ -66,7 +66,7 @@ def listar_categorias():
 def registrar_servico():
     try:
         resposta = requests.post("https://registro-de-servicos.up.railway.app/registrar_servidor", json={
-            "ip": "meu-servidor-ip",
+            "ip": "servidor-matrix.up.railway.app",
             "localizacao": "Brasil",
             "threads": threading.active_count()
         })
