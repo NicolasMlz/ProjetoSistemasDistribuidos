@@ -59,46 +59,38 @@ def deletar_registros():
         conn.rollback()  # Caso haja erro, desfazemos a transação
         print(f"Erro ao deletar registros: {e}")
 
-
 # Importar csv para o banco quando o servidor subir
-def importar_csv_para_banco(caminho_csv):
-    conn = None
+def importar_csv_para_banco():
     try:
-        # Conectar ao banco
-        conn = psycopg2.connect(
-            host="postgres.railway.internal",
-            port="5432",
-            database="railway",
-            user="postgres",
-            password="eZVzVdurIuuAouQpqEGeiswWNEZPZvxu"
-        )
-        cursor = conn.cursor()
+        # Criar conexão com o banco
+        engine = create_engine(DATABASE_URL)
+        conn = engine.connect()
         
-        # Leitura e importação do CSV
-        with open(caminho_csv, 'r', encoding='utf-8') as file:
-            leitor_csv = csv.DictReader(file)
-            for linha in leitor_csv:
-                try:
-                    # Inserir dados no banco
-                    query = """
-                    INSERT INTO noticia (manchete, subtitulo, texto, data_publicacao, autor, classificacao_etaria, categoria)
-                    VALUES (%(manchete)s, %(subtitulo)s, %(texto)s, %(data_publicacao)s, %(autor)s, %(classificacao_etaria)s, %(categoria)s)
-                    """
-                    cursor.execute(query, linha)
-                except Exception as e:
-                    print(f"Erro ao importar linha {linha}: {e}")
-                    conn.rollback()  # Reverter transação da linha com erro
-                    continue
-        conn.commit()
-        print("Importação concluída com sucesso.")
-    except psycopg2.OperationalError as e:
-        print(f"Erro de conexão com o banco de dados: {e}")
+        # Criar/verificar a tabela
+        criar_tabela(engine)
+
+        # Ler o CSV com pandas
+        df = pd.read_csv(arquivo_csv)
+
+        # Renomear colunas para corresponderem à tabela do banco
+        df = df.rename(columns={
+            "manchete": "manchete",
+            "subtitulo": "subtitulo",
+            "texto": "texto",
+            "data_publicacao": "data_publicacao",
+            "autor": "autor",
+            "classificacao_etaria": "classificacao_etaria",
+            "categoria": "categoria"
+        })
+
+        # Inserir os dados no banco
+        df.to_sql('noticia', con=conn, if_exists='append', index=False)
+
+        print("Dados do CSV importados com sucesso!")
     except Exception as e:
         print(f"Erro ao importar dados: {e}")
     finally:
-        if conn:
-            conn.close()
-            print("Conexão com o banco de dados encerrada.")
+        conn.close()
 
 @app.route('/noticias', methods=['POST'])
 def criar_noticia():
@@ -225,7 +217,7 @@ def registrar_servico():
         print(f"Erro ao registrar serviço: {e}")
 
 if __name__ == "__main__":
-    importar_csv_para_banco(arquivo_csv)
+    importar_csv_para_banco()
     deletar_registros()
     registrar_servico()
     app.run(host="0.0.0.0", port=9000)
