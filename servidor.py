@@ -233,6 +233,5 @@ def registrar_servico():
         print(f"Erro ao registrar serviço: {e}")
 
 if __name__ == "__main__":
-    importar_csv_para_banco()
     registrar_servico()
-    app.run(host="https://servidor-matrix.up.railway.app/", port=8080)
+    app.run(host="0.0.0.0", port=9000)
