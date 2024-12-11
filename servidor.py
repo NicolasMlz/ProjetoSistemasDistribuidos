@@ -235,4 +235,5 @@ def registrar_servico():
 if __name__ == "__main__":
     importar_csv_para_banco()
     registrar_servico()
-    app.run(host="0.0.0.0", port=9000)
+    port = int(os.getenv("PORT", 9000))
+    app.run(host="0.0.0.0", port=port)
