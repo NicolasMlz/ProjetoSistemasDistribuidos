@@ -129,7 +129,7 @@ def ler_noticias():
             rows = cursor.fetchall()
             colunas = [desc[0] for desc in cursor.description]
             noticias = [dict(zip(colunas, row)) for row in rows]
-        return jsonify(noticias), 200
+        return jsonify({"teste": 10}), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao listar notícias: {e}"}), 500
 
