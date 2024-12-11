@@ -33,12 +33,10 @@ def criar_tabela():
     try:
         # Usar a conexão global `conn`
         with conn.cursor() as cursor:
-            # Exclui a tabela se ela já existir
-            cursor.execute("DROP TABLE IF EXISTS noticia;")
 
             # Cria a tabela novamente
             cursor.execute("""
-                CREATE TABLE noticia (
+                CREATE TABLE IF NOT EXISTS noticia (
                     id SERIAL PRIMARY KEY,  -- Usando SERIAL para auto incremento
                     manchete TEXT NOT NULL,
                     subtitulo TEXT,
@@ -50,7 +48,7 @@ def criar_tabela():
                 )
             """)
             conn.commit()  # Commit após criar a tabela
-        print("Tabela `noticia` recriada com sucesso!")
+        print("Tabela `noticia` criada/atualizada com sucesso!")
     except Exception as e:
         print(f"Erro ao criar a tabela: {e}")
         conn.rollback()  # Caso haja algum erro, desfaz a transação
