@@ -102,6 +102,10 @@ def importar_csv_para_banco():
 
 def criar_noticia_bd(dados):
     try:
+        # Remover o campo 'id', pois o banco vai gerar automaticamente
+        if "id" in dados:
+            del dados["id"]
+        
         # Assumindo que a conexão conn já está estabelecida
         with conn.cursor() as cursor:
             query = """
