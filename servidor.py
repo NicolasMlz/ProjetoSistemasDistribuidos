@@ -35,7 +35,7 @@ def criar_tabela():
         with conn.cursor() as cursor:
             # Exclui a tabela se ela já existir
             cursor.execute("DROP TABLE IF EXISTS noticia;")
-            
+
             # Cria a tabela novamente
             cursor.execute("""
                 CREATE TABLE noticia (
@@ -69,6 +69,8 @@ def deletar_registros():
 # Importar csv para o banco quando o servidor subir
 def importar_csv_para_banco():
     try:
+        # Criar/verificar a tabela
+        criar_tabela()
 
         # Ler o CSV com pandas
         df = pd.read_csv(arquivo_csv)
@@ -92,6 +94,8 @@ def importar_csv_para_banco():
         # Iterar sobre cada linha e inserir no banco de dados
         for _, row in df.iterrows():
             dados = row.to_dict()
+            resposta = criar_noticia_bd(dados)
+            print(resposta)  # Pode ser útil para depuração
             criar_noticia_bd(dados)
         print("Dados do CSV importados com sucesso!")
     except Exception as e:
@@ -106,7 +110,7 @@ def criar_noticia_bd(dados):
         # Remover o campo 'id', pois o banco vai gerar automaticamente
         if "id" in dados:
             del dados["id"]
-        
+
         # Assumindo que a conexão conn já está estabelecida
         with conn.cursor() as cursor:
             query = """
@@ -118,10 +122,12 @@ def criar_noticia_bd(dados):
                 dados["data_publicacao"], dados["autor"], dados["classificacao_etaria"], dados["categoria"]
             ))
             conn.commit()
+        return {"message": "Notícia criada com sucesso."}
     except Exception as e:
         conn.rollback()
+        return {"erro": f"Erro ao criar notícia: {e}"}
 
-@app.route("/noticias", methods=["GET"])
+@app.route('/noticias', methods=['GET'])
 def ler_noticias():
     try:
         with conn.cursor() as cursor:
@@ -129,7 +135,7 @@ def ler_noticias():
             rows = cursor.fetchall()
             colunas = [desc[0] for desc in cursor.description]
             noticias = [dict(zip(colunas, row)) for row in rows]
-        return jsonify({"teste": 10}), 200
+        return jsonify(noticias), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao listar notícias: {e}"}), 500
 
