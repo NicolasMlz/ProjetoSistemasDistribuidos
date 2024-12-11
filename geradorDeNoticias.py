@@ -15,11 +15,11 @@ def gerar_noticia(id):
     classificacao_etaria = random.choice([0, 10, 12, 14, 16, 18])
     categoria = random.choice(categorias)
     
-    return [id, manchete, subtitulo, texto, data_publicacao, autor, classificacao_etaria, categoria]
+    return [manchete, subtitulo, texto, data_publicacao, autor, classificacao_etaria, categoria]
 
 with open('noticias.csv', mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
-    writer.writerow(['id', 'manchete', 'subtitulo', 'texto', 'data_publicacao', 'autor', 'classificacao_etaria', 'categoria'])
+    writer.writerow(['manchete', 'subtitulo', 'texto', 'data_publicacao', 'autor', 'classificacao_etaria', 'categoria'])
     
     for i in range(1, 1001):
         writer.writerow(gerar_noticia(i))
