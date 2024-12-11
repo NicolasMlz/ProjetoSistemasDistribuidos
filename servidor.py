@@ -34,6 +34,7 @@ def criar_tabela(engine):
     # Definição do esquema da tabela `noticia`
     noticia_table = Table(
         "noticia", metadata,
+        Column("id", Integer, Identity(always=False), primary_key=True), 
         Column("manchete", Text, nullable=False),
         Column("subtitulo", Text),
         Column("texto", Text, nullable=False),
