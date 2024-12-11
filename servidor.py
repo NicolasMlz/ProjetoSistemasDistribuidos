@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 
 # Obter URL do banco de dados do ambiente
-DATABASE_URL = "postgresql://postgres:kdfNyyzbNrgukEMpumofykaheZOEjclt@junction.proxy.rlwy.net:25221/railway"
+DATABASE_URL = "postgresql://postgres:eZVzVdurIuuAouQpqEGeiswWNEZPZvxu@autorack.proxy.rlwy.net:50513/railway"
 
 # Nome do arquivo CSV com as notícias
 arquivo_csv = "noticias.csv"
@@ -61,37 +61,44 @@ def deletar_registros():
 
 
 # Importar csv para o banco quando o servidor subir
-def importar_csv_para_banco():
+def importar_csv_para_banco(caminho_csv):
+    conn = None
     try:
-        # Criar conexão com o banco
-        engine = create_engine(DATABASE_URL)
-        conn = engine.connect()
+        # Conectar ao banco
+        conn = psycopg2.connect(
+            host="postgres.railway.internal",
+            port="5432",
+            database="railway",
+            user="postgres",
+            password="eZVzVdurIuuAouQpqEGeiswWNEZPZvxu"
+        )
+        cursor = conn.cursor()
         
-        # Criar/verificar a tabela
-        criar_tabela(engine)
-
-        # Ler o CSV com pandas
-        df = pd.read_csv(arquivo_csv)
-
-        # Renomear colunas para corresponderem à tabela do banco
-        df = df.rename(columns={
-            "manchete": "manchete",
-            "subtitulo": "subtitulo",
-            "texto": "texto",
-            "data_publicacao": "data_publicacao",
-            "autor": "autor",
-            "classificacao_etaria": "classificacao_etaria",
-            "categoria": "categoria"
-        })
-
-        # Inserir os dados no banco
-        df.to_sql('noticia', con=conn, if_exists='append', index=False)
-
-        print("Dados do CSV importados com sucesso!")
+        # Leitura e importação do CSV
+        with open(caminho_csv, 'r', encoding='utf-8') as file:
+            leitor_csv = csv.DictReader(file)
+            for linha in leitor_csv:
+                try:
+                    # Inserir dados no banco
+                    query = """
+                    INSERT INTO noticia (manchete, subtitulo, texto, data_publicacao, autor, classificacao_etaria, categoria)
+                    VALUES (%(manchete)s, %(subtitulo)s, %(texto)s, %(data_publicacao)s, %(autor)s, %(classificacao_etaria)s, %(categoria)s)
+                    """
+                    cursor.execute(query, linha)
+                except Exception as e:
+                    print(f"Erro ao importar linha {linha}: {e}")
+                    conn.rollback()  # Reverter transação da linha com erro
+                    continue
+        conn.commit()
+        print("Importação concluída com sucesso.")
+    except psycopg2.OperationalError as e:
+        print(f"Erro de conexão com o banco de dados: {e}")
     except Exception as e:
         print(f"Erro ao importar dados: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
+            print("Conexão com o banco de dados encerrada.")
 
 @app.route('/noticias', methods=['POST'])
 def criar_noticia():
