@@ -86,9 +86,10 @@ def importar_csv_para_banco():
         # Remover a coluna "id" caso esteja presente no DataFrame
         if "id" in df.columns:
             df = df.drop(columns=["id"])
+        df = df.dropna()
         
         # Inserir os dados no banco
-        df.to_sql('noticia', con=conn, if_exists='append', index=False)
+        df.to_sql('noticia', con=conn, if_exists='append', index=False, method='multi')
 
         print("Dados do CSV importados com sucesso!")
     except Exception as e:
