@@ -65,7 +65,7 @@ def importar_csv_para_banco():
         # Criar conexão com o banco
         engine = create_engine(DATABASE_URL)
         conn = engine.connect()
-        
+
         # Criar/verificar a tabela
         criar_tabela(engine)
 
@@ -87,9 +87,12 @@ def importar_csv_para_banco():
         if "id" in df.columns:
             df = df.drop(columns=["id"])
         df = df.dropna()
-        
-        # Inserir os dados no banco
-        df.to_sql('noticia', con=conn, if_exists='append', index=False, method='multi')
+
+        # Iterar sobre cada linha e inserir no banco de dados
+        for _, row in df.iterrows():
+            dados = row.to_dict()
+            resposta = criar_noticia_bd(dados)
+            print(resposta)  # Pode ser útil para depuração
 
         print("Dados do CSV importados com sucesso!")
     except Exception as e:
@@ -97,10 +100,9 @@ def importar_csv_para_banco():
     finally:
         conn.close()
 
-@app.route('/noticias', methods=['POST'])
-def criar_noticia():
-    dados = request.json
+def criar_noticia_bd(dados):
     try:
+        # Assumindo que a conexão conn já está estabelecida
         with conn.cursor() as cursor:
             query = """
                 INSERT INTO noticia (manchete, subtitulo, texto, data_publicacao, autor, classificacao_etaria, categoria)
@@ -111,10 +113,10 @@ def criar_noticia():
                 dados["data_publicacao"], dados["autor"], dados["classificacao_etaria"], dados["categoria"]
             ))
             conn.commit()
-        return jsonify({"message": "Notícia criada com sucesso."}), 201
+        return {"message": "Notícia criada com sucesso."}
     except Exception as e:
         conn.rollback()
-        return jsonify({"erro": f"Erro ao criar notícia: {e}"}), 500
+        return {"erro": f"Erro ao criar notícia: {e}"}
 
 @app.route('/noticias', methods=['GET'])
 def ler_noticias():
