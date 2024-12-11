@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 
 # Obter URL do banco de dados do ambiente
-DATABASE_URL = "postgresql://postgres:eZVzVdurIuuAouQpqEGeiswWNEZPZvxu@autorack.proxy.rlwy.net:50513/railway"
+DATABASE_URL = "postgresql://postgres:AzFShVYcrGPfpjajWolwKgFIIwquCtaR@junction.proxy.rlwy.net:58430/railway"
 
 # Nome do arquivo CSV com as notícias
 arquivo_csv = "noticias.csv"
