@@ -7,7 +7,13 @@ WORKDIR /app
 # Copiar arquivos do servidor
 COPY . /app
 
-# Instalar dependências
+# Instalar dependências do sistema necessárias para o psycopg2
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar dependências Python
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expor a porta 8000
