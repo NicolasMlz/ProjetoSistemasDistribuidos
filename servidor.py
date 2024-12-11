@@ -31,7 +31,7 @@ except Exception as e:
 def criar_tabela(engine):
     with engine.connect() as conn:
         # Exclui a tabela se ela já existir
-        conn.execute(text("DROP TABLE noticia"))
+        conn.execute(text("DROP TABLE IF EXISTS noticia;"))
 
         # Cria a tabela novamente
         conn.execute(text("""
@@ -229,6 +229,5 @@ def registrar_servico():
 
 if __name__ == "__main__":
     importar_csv_para_banco()
-    deletar_registros()
     registrar_servico()
     app.run(host="0.0.0.0", port=9000)
