@@ -83,6 +83,10 @@ def importar_csv_para_banco():
             "categoria": "categoria"
         })
 
+        # Remover a coluna "id" caso esteja presente no DataFrame
+        if "id" in df.columns:
+            df = df.drop(columns=["id"])
+        
         # Inserir os dados no banco
         df.to_sql('noticia', con=conn, if_exists='append', index=False)
 
