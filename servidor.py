@@ -100,10 +100,6 @@ def importar_csv_para_banco():
         print("Dados do CSV importados com sucesso!")
     except Exception as e:
         print(f"Erro ao importar dados: {e}")
-    finally:
-        # Certifique-se de que a conexão será fechada adequadamente
-        if conn:
-            conn.close()
 
 def criar_noticia_bd(dados):
     try:
