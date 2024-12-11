@@ -121,7 +121,7 @@ def criar_noticia_bd(dados):
     except Exception as e:
         conn.rollback()
 
-@app.route('/noticias', methods=['GET'])
+@app.route("/noticias", methods=["GET"])
 def ler_noticias():
     try:
         with conn.cursor() as cursor:
