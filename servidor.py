@@ -225,7 +225,7 @@ def registrar_servico():
         print(f"Erro ao registrar serviço: {e}")
 
 if __name__ == "__main__":
-    importar_csv_para_banco()
+    importar_csv_para_banco(arquivo_csv)
     deletar_registros()
     registrar_servico()
     app.run(host="0.0.0.0", port=9000)
