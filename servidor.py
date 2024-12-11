@@ -69,8 +69,6 @@ def deletar_registros():
 # Importar csv para o banco quando o servidor subir
 def importar_csv_para_banco():
     try:
-        # Criar/verificar a tabela
-        criar_tabela()
 
         # Ler o CSV com pandas
         df = pd.read_csv(arquivo_csv)
@@ -94,9 +92,7 @@ def importar_csv_para_banco():
         # Iterar sobre cada linha e inserir no banco de dados
         for _, row in df.iterrows():
             dados = row.to_dict()
-            resposta = criar_noticia_bd(dados)
-            print(resposta)  # Pode ser útil para depuração
-
+            criar_noticia_bd(dados)
         print("Dados do CSV importados com sucesso!")
     except Exception as e:
         print(f"Erro ao importar dados: {e}")
@@ -122,10 +118,8 @@ def criar_noticia_bd(dados):
                 dados["data_publicacao"], dados["autor"], dados["classificacao_etaria"], dados["categoria"]
             ))
             conn.commit()
-        return {"message": "Notícia criada com sucesso."}
     except Exception as e:
         conn.rollback()
-        return {"erro": f"Erro ao criar notícia: {e}"}
 
 @app.route('/noticias', methods=['GET'])
 def ler_noticias():
@@ -233,5 +227,6 @@ def registrar_servico():
         print(f"Erro ao registrar serviço: {e}")
 
 if __name__ == "__main__":
+    importar_csv_para_banco()
     registrar_servico()
     app.run(host="0.0.0.0", port=9000)
