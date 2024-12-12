@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import pandas as pd
 import csv
+import time
 import requests
 import threading
 import socket
@@ -216,6 +217,15 @@ def obter_noticia_por_id(id):
         return jsonify(noticia), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao buscar notícia: {e}"}), 500
+
+@app.route('/manter_conexao', methods=['GET'])
+def manter_conexao():
+    try:
+        # Simula a manutenção da conexão por 60 segundos
+        time.sleep(60)
+        return Response("Conexão mantida por 60 segundos", status=200)
+    except Exception as e:
+        return Response(f"Erro ao manter conexão: {e}", status=500)
 
 # Função para registrar o servidor no Registro de Serviços
 def registrar_servidor():
