@@ -176,6 +176,17 @@ def listar_categorias():
     except Exception as e:
         return jsonify({"erro": f"Erro ao listar categorias: {e}"}), 500
 
+@app.route('/noticias/total', methods=['GET'])
+def contar_noticias():
+    try:
+        with conn.cursor() as cursor:
+            query = "SELECT COUNT(*) FROM noticia"
+            cursor.execute(query)
+            total = cursor.fetchone()[0]
+        return jsonify({"total_noticias": total}), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao contar notícias: {e}"}), 500
+
 @app.route('/noticias/categoria/<string:categoria>', methods=['GET'])
 def noticias_por_categoria(categoria):
     try:
@@ -211,7 +222,7 @@ def registrar_servidor():
     try:
         # IP do servidor de registro
         ip_registro_de_servicos = "https://registro-de-servicos.up.railway.app"  # Endereço do serviço de registro
-        ip_servidor = "https://servidor-matrix1.up.railway.app"
+        ip_servidor = "https://servidor-matrix.up.railway.app"
         threads = threading.active_count()  # Número de threads ativas no servidor
 
         # Requisição POST para registrar o servidor no servidor de registro
