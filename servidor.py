@@ -230,10 +230,10 @@ def registrar_servidor():
 @app.route("/get_threads", methods=["GET"])
 def get_threads():
     # Retorna o número de threads ativas no servidor
-    return jsonify({"threads": threading.active_count()}), 200
+    return jsonify({"threads": threading.active_count()}), 200
 
 if __name__ == "__main__":
     importar_csv_para_banco()
-    registrar_servico()
+    registrar_servidor()
     port = int(os.getenv("PORT", 9000))
     app.run(host="0.0.0.0", port=port)
