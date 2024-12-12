@@ -222,8 +222,8 @@ def obter_noticia_por_id(id):
 def manter_conexao():
     try:
         # Simula a manutenção da conexão por 60 segundos
-        time.sleep(60)
-        return Response("Conexão mantida por 60 segundos", status=200)
+        time.sleep(600)
+        return Response("Conexão mantida por 10 minutos", status=200)
     except Exception as e:
         return Response(f"Erro ao manter conexão: {e}", status=500)
 
@@ -256,6 +256,5 @@ def get_threads():
 if __name__ == "__main__":
     importar_csv_para_banco()
     registrar_servidor()
-    deletar_registros()
     port = int(os.getenv("PORT", 9000))
     app.run(host="0.0.0.0", port=port)
