@@ -206,29 +206,34 @@ def obter_noticia_por_id(id):
     except Exception as e:
         return jsonify({"erro": f"Erro ao buscar notícia: {e}"}), 500
 
-
-def retornar_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    s.close()
-    return ip
-
 # Função para registrar o servidor no Registro de Serviços
-def registrar_servico():
+def registrar_servidor():
     try:
-        resposta = requests.post("http://localhost:8080/registrar-servidor", json={
-            "ip": retornar_ip(),
-            "localizacao": "Brasil",
-            "threads": threading.active_count()
+        # IP do servidor de registro
+        ip_registro_de_servicos = "https://registro-de-servicos.up.railway.app"  # Endereço do serviço de registro
+        ip_servidor = "https://servidor-matrix1.up.railway.app"
+        threads = threading.active_count()  # Número de threads ativas no servidor
+
+        # Requisição POST para registrar o servidor no servidor de registro
+        resposta = requests.post(f"{ip_registro_de_servicos}/registrar-servidor", json={
+            "ip": ip_servidor,
+            "threads": threads
         })
-        print("Serviço registrado:", resposta.json())
+
+        if resposta.status_code == 200:
+            print(f"Servidor registrado com sucesso: {resposta.json()}")
+        else:
+            print(f"Erro ao registrar servidor: {resposta.status_code} - {resposta.text}")
     except Exception as e:
-        print(f"Erro ao registrar serviço: {e}")
+        print(f"Erro ao registrar o servidor: {e}")
+
+@app.route("/get_threads", methods=["GET"])
+def get_threads():
+    # Retorna o número de threads ativas no servidor
+    return jsonify({"threads": threading.active_count()}), 200
 
 if __name__ == "__main__":
     importar_csv_para_banco()
-    deletar_registros()
     registrar_servico()
     port = int(os.getenv("PORT", 9000))
     app.run(host="0.0.0.0", port=port)
